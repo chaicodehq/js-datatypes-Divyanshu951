@@ -29,4 +29,15 @@
  */
 export function maskAadhaar(aadhaarNumber) {
   // Your code here
+
+  // Edge cases
+  if (typeof aadhaarNumber !== "string") return "INVALID";
+
+  aadhaarNumber = aadhaarNumber.trim();
+  if (aadhaarNumber.length !== 12) return "INVALID";
+
+  const nonDigitCheck = /^\d+$/.test(aadhaarNumber);
+  if (!nonDigitCheck) return "INVALID";
+
+  return "XXXX-".repeat(2) + aadhaarNumber.slice(-4);
 }

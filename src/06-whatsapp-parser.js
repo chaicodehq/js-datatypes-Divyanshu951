@@ -40,4 +40,37 @@
  */
 export function parseWhatsAppMessage(message) {
   // Your code here
+  if (typeof message !== "string") return null;
+
+  const dashIndex = message.indexOf(" - ");
+  const colonIndex = message.indexOf(": ", dashIndex + 3);
+
+  if (dashIndex === -1 || colonIndex === -1) return null;
+
+  const sender = message.slice(dashIndex + 3, colonIndex);
+  const date = message.split(", ")[0];
+  const time = message.slice(dashIndex - 5, dashIndex);
+  const messageText = message.slice(colonIndex + 2).trim();
+  const wordCount = messageText.split(" ").filter((word) => word).length;
+  let sentiment = "neutral";
+
+  const lowerCaseMessagText = messageText.toLowerCase();
+  if (
+    lowerCaseMessagText.includes("😂") ||
+    lowerCaseMessagText.includes(":)") ||
+    lowerCaseMessagText.includes("haha")
+  )
+    sentiment = "funny";
+  else if (
+    lowerCaseMessagText.includes("❤") ||
+    lowerCaseMessagText.includes("love") ||
+    lowerCaseMessagText.includes("pyaar")
+  )
+    sentiment = "love";
+
+  return { date, time, sender, text: messageText, wordCount, sentiment };
 }
+
+// console.log(
+//   parseWhatsAppMessage("25/01/2025, 14:30 - Rahul: Bhai party kab hai? 😂"),
+// );

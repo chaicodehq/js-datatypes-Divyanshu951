@@ -45,4 +45,58 @@
  */
 export function iplAuctionSummary(team, players) {
   // Your code here
+
+  // Edge cases
+  if (!team || typeof team !== "object" || !team.purse || team.purse < 0)
+    return null;
+  if (!Array.isArray(players) || players.length === 0) return null;
+
+  // Logic
+
+  const totalSpent = players.reduce(
+    (total, player) => (total += player.price),
+    0,
+  );
+  const remaining = team.purse - totalSpent;
+  const playerCount = players.length;
+
+  const cheapestPlayer = players.reduce((cheapest, player) =>
+    player.price < cheapest.price ? player : cheapest,
+  );
+
+  const costliestPlayer = players.reduce((cheapest, player) =>
+    player.price > cheapest.price ? player : cheapest,
+  );
+
+  const averagePrice = Math.round(totalSpent / playerCount);
+
+  const byRole = players.reduce((acc, curr) => {
+    if (!acc[curr.role]) acc[curr.role] = 1;
+    else acc[curr.role] += 1;
+    return acc;
+  }, {});
+
+  const isOverBudget = totalSpent > team.purse;
+
+  return {
+    teamName: team.name,
+    totalSpent,
+    remaining,
+    playerCount,
+    costliestPlayer,
+    cheapestPlayer,
+    averagePrice,
+    byRole,
+    isOverBudget,
+  };
 }
+
+console.log(
+  iplAuctionSummary({ name: "CSK", purse: 9000 }, [
+    { name: "Dhoni", role: "wk", price: 1200 },
+    { name: "Dhoni2", role: "bat", price: 1400 },
+    { name: "Dhoni3", role: "bowl", price: 1400 },
+    { name: "Dhoni4", role: "ar", price: 1400 },
+    { name: "Dhoni5", role: "ar", price: 1400 },
+  ]),
+);

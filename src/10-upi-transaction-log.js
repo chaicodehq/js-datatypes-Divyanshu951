@@ -48,4 +48,105 @@
  */
 export function analyzeUPITransactions(transactions) {
   // Your code here
+
+  // Checks
+  if (!Array.isArray(transactions) || transactions.length === 0) return null;
+
+  const validTransactions = transactions.filter(
+    (transaction) =>
+      transaction.amount > 0 &&
+      (transaction.type === "credit" || transaction.type === "debit"),
+  );
+
+  if (validTransactions.length === 0) return null;
+
+  const totalCredit = validTransactions.reduce(
+    (total, transaction) =>
+      transaction.type === "credit" ? (total += transaction.amount) : total,
+    0,
+  );
+
+  const totalDebit = validTransactions.reduce(
+    (total, transaction) =>
+      transaction.type === "debit" ? (total += transaction.amount) : total,
+    0,
+  );
+
+  const netBalance = totalCredit - totalDebit;
+
+  const transactionCount = validTransactions.length;
+
+  const avgTransaction = Math.round(
+    (totalCredit + totalDebit) / transactionCount,
+  );
+
+  const highestTransaction = validTransactions.reduce((acc, curr) =>
+    curr.amount > acc.amount ? curr : acc,
+  );
+
+  const categoryBreakdown = validTransactions.reduce((acc, curr) => {
+    if (!acc[curr.category]) acc[curr.category] = curr.amount;
+    else acc[curr.category] += curr.amount;
+    return acc;
+  }, {});
+
+  const frequentContactsObj = validTransactions.reduce((acc, curr) => {
+    if (!acc[curr.to]) acc[curr.to] = 1;
+    else acc[curr.to] += 1;
+    return acc;
+  }, {});
+
+  const frequentContact = Object.keys(frequentContactsObj).reduce((a, b) =>
+    frequentContactsObj[a] > frequentContactsObj[b] ? a : b,
+  );
+
+  const allAbove100 = validTransactions.every(
+    (transaction) => transaction.amount > 100,
+  );
+
+  const hasLargeTransaction = validTransactions.some(
+    (transaction) => transaction.amount >= 5000,
+  );
+
+  return {
+    totalCredit,
+    totalDebit,
+    netBalance,
+    transactionCount,
+    avgTransaction,
+    highestTransaction,
+    categoryBreakdown,
+    frequentContact,
+    allAbove100,
+    hasLargeTransaction,
+  };
 }
+
+// console.log(
+//   analyzeUPITransactions([
+//     {
+//       id: "T1",
+//       type: "credit",
+//       amount: 5000,
+//       to: "Salary",
+//       category: "income",
+//       date: "2025-01-01",
+//     },
+//     {
+//       id: "T2",
+//       type: "debit",
+//       amount: 200,
+//       to: "Swiggy",
+//       category: "food",
+//       date: "2025-01-02",
+//     },
+//     {
+//       id: "T3",
+//       type: "debit",
+//       amount: 100,
+//       to: "Swiggy",
+//       category: "food",
+//       date: "2025-01-03",
+//     },
+//   ]),
+// );

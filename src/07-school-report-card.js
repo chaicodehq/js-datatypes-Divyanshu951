@@ -42,4 +42,103 @@
  */
 export function generateReportCard(student) {
   // Your code here
+
+  // Edge cases
+  if (typeof student !== "object" || student == null) return null;
+  if (typeof student.name !== "string" || !student.name) return null;
+  if (
+    typeof student.marks !== "object" ||
+    Object.entries(student.marks).length === 0
+  )
+    return null;
+
+  // Logic
+  const subjectObj = Object.values(student)[1];
+  const marksArray = Object.values(subjectObj);
+
+  // Edge case check for invalid marks
+  for (let index = 0; index < marksArray.length; index++) {
+    if (
+      typeof marksArray[index] !== "number" ||
+      marksArray[index] < 0 ||
+      marksArray[index] > 100
+    )
+      return null;
+  }
+
+  const subjectArr = Object.entries(subjectObj);
+  const totalMarks = marksArray.reduce((total, mark) => (total += mark), 0);
+  const percentage = parseFloat(
+    ((totalMarks / (marksArray.length * 100)) * 100).toFixed(2),
+  );
+  let grade;
+  switch (true) {
+    case +percentage >= 90:
+      grade = "A+";
+      break;
+    case +percentage >= 80:
+      grade = "A";
+      break;
+    case +percentage >= 70:
+      grade = "B";
+      break;
+    case +percentage >= 60:
+      grade = "C";
+      break;
+    case +percentage >= 40:
+      grade = "D";
+      break;
+    default:
+      grade = "F";
+  }
+
+  // highestSubject and lowestSubject
+  const highestSubject = subjectArr.reduce((max, curr) =>
+    curr[1] > max[1] ? curr : max,
+  )[0];
+
+  const lowestSubject = subjectArr.reduce((min, curr) =>
+    curr[1] < min[1] ? curr : min,
+  )[0];
+
+  // passedSubjects and failedSubjects
+  const passedAndFailedSubjects = subjectArr.reduce(
+    (acc, curr) => {
+      if (curr[1] >= 40)
+        acc[0].push(curr[0]); // Pass
+      else if (curr[1] < 40) acc[1].push(curr[0]); // Fail
+      return acc;
+    },
+    [[], []],
+  );
+
+  const [passedSubjects, failedSubjects] = passedAndFailedSubjects;
+  const subjectCount = subjectArr.length;
+
+  return {
+    name: student.name,
+    totalMarks,
+    percentage,
+    grade,
+    highestSubject,
+    lowestSubject,
+    passedSubjects,
+    failedSubjects,
+    subjectCount,
+  };
 }
+
+// console.log(
+//   generateReportCard({
+//     name: "Rahul",
+//     marks: {},
+//   }),
+// );
+
+// const ans = { name: string,
+//    totalMarks: number,
+//     percentage: number,
+//      grade: string,
+//       highestSubject: string,
+//        lowestSubject: string,
+//         passedSubjects: string[], failedSubjects: string[], subjectCount: number }

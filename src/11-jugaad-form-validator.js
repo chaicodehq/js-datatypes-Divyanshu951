@@ -63,4 +63,67 @@
  */
 export function validateForm(formData) {
   // Your code here
+
+  const { name, email, phone, age, pincode, agreeTerms } = formData;
+  const errors = {};
+
+  // Name
+  if (!name.trim() || name.length < 2 || name.length > 50)
+    errors.name = "Name must be 2-50 characters";
+
+  // Email
+  if (email.match(/@/g)?.length !== 1 || !email.includes("."))
+    errors.email = "Invalid email format";
+
+  // phone
+  if (
+    typeof phone !== "string" ||
+    phone.length !== 10 ||
+    !"6789".includes(phone[0]) ||
+    ![...phone].every((ch) => ch >= "0" && ch <= "9")
+  ) {
+    errors.phone = "Invalid Indian phone number";
+  }
+
+  // age
+  const parsedAge = typeof age === "string" ? parseInt(age, 10) : age;
+
+  if (
+    isNaN(parsedAge) ||
+    !Number.isInteger(parsedAge) ||
+    parsedAge < 16 ||
+    parsedAge > 100
+  ) {
+    errors.age = "Age must be an integer between 16 and 100";
+  }
+
+  // pincode
+  if (
+    typeof pincode !== "string" ||
+    pincode.length !== 6 ||
+    pincode[0] === "0" ||
+    ![...pincode].every((ch) => ch >= "0" && ch <= "9")
+  ) {
+    errors.pincode = "Invalid Indian pincode";
+  }
+
+  // state
+  if (!(formData?.state ?? "")) errors.state = "State is required";
+
+  // agreeTerms
+  if (Boolean(agreeTerms) !== true) errors.agreeTerms = "Must agree to terms";
+
+  return { isValid: Object.keys(errors).length === 0, errors };
 }
+
+console.log(
+  validateForm({
+    name: "AB",
+    email: "bad-email.@",
+    phone: "9999999999",
+    age: 20,
+    pincode: "060090",
+    state: true,
+    agreeTerms: true,
+  }),
+);
